@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<project name="db-upgrade" basedir="." default="run-upgrade">
+
+    <property name="name" value="${ant.project.name}"/>
+
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+          Referenced Directories
+         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <property name="lib.dir" value="lib" />
+    <property name="src.dir" value="src" />
+
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+          Classpaths
+         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+    <!-- In addition to containing cm-db-updater's dependencies, the classpath
+         should also contain the database's jdbc driver.                     -->
+    <path id="upgrade.classpath">
+        <fileset dir="${lib.dir}">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+          Taskdefs
+         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <taskdef name="upgrade" classname="com.urbancode.cm.db.updater.DbUpgradeTask" classpathref="upgrade.classpath"/>
+
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+          Upgrade Input Properties
+         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <!-- The following four properties are defined statically here, but could also be defined on the command line
+         using the -D flag. For example, the following command would initiate this ANT script with
+         the property "upgrade.driver" set to a mysql driver, and "upgrade.userid" set to "admin":
+
+         ant -f example-upgrade.xml -Dupgrade.driver=org.mysql.Driver -Duserid=admin
+
+         IMPORTANT: ANT properties are not traditional variables. Their values cannot be changed once set. -->
+
+    <property name="upgrade.driver" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"/>
+    <property name="upgrade.url" value="jdbc:sqlserver://localhost:1433;databaseName=ring2park_int"/>
+    <property name="upgrade.userid" value="ring2park_int"/>
+    <property name="upgrade.password" value="ring2park_int"/>
+
+    <!-- These properties define how the updater checks and manipulates the version in the DB_VERSION table -->
+    <property name="upgrade.currentVersionSql" value="SELECT VER FROM DB_VERSION WHERE RELEASE_NAME=?"/>
+    <property name="upgrade.deleteVersionSql" value="DELETE FROM DB_VERSION WHERE RELEASE_NAME=?"/>
+    <property name="upgrade.updateVersionSql" value="INSERT INTO DB_VERSION (RELEASE_NAME, VER) VALUES (?, ?)"/>
+
+    <!-- ###################################################################
+          Main Targets
+         ################################################################### -->
+    <!-- ===================================================================
+          default target calls all other targets
+         =================================================================== -->
+    <target name="run-upgrade">
+      <upgrade driver="${upgrade.driver}"
+               url="${upgrade.url}"
+               userid="${upgrade.userid}"
+               password="${upgrade.password}"
+               currentVersionSql="${upgrade.currentVersionSql}"
+               deleteVersionSql="${upgrade.deleteVersionSql}"
+               updateVersionSql="${upgrade.updateVersionSql}"
+               classpathref="upgrade.classpath">
+        <fileset dir="${src.dir}">
+          <include name="upgrade_sql*.xml" />
+        </fileset>
+      </upgrade>
+    </target>
+</project>
