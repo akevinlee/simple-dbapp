@@ -38,9 +38,9 @@
          IMPORTANT: ANT properties are not traditional variables. Their values cannot be changed once set. -->
 
     <property name="upgrade.driver" value="com.mysql.jdbc.Driver"/>
-    <property name="upgrade.url" value="jdbc:mysql://serenadeploy.cloudapp.net:3306/simpledb_int"/>
-    <property name="upgrade.userid" value="simpledb_int"/>
-    <property name="upgrade.password" value="simpledb_int"/>
+    <property name="upgrade.url" value="jdbc:mysql://localhost:3306/simpledb_dev"/>
+    <property name="upgrade.userid" value="simpledb_dev"/>
+    <property name="upgrade.password" value="simpledb_dev"/>
 
     <!-- These properties define how the updater checks and manipulates the version in the DB_VERSION table -->
     <property name="upgrade.currentVersionSql" value="SELECT VER FROM DB_VERSION WHERE RELEASE_NAME=?"/>

@@ -1,0 +1,37 @@
+<change-set release="1.0.5">
+
+    <change number="1">
+        <description>
+            Add Penalties Table.
+        </description>
+        <sql separator=";">
+            create table PENALTIES (
+                id int not null auto_increment,
+                paid bit default 0,
+                penalty_date datetime null,
+                booking int null,
+                user varchar(255) null,
+                location int null,
+                vehicle int null,
+                card int null,
+                constraint pk_id primary key (id),
+                constraint fk_penalty_booking foreign key (booking)
+                    references BOOKING (id),
+                constraint fk_penalty_user foreign key (user)
+                    references USER (username),
+                constraint fk_penalty_location foreign key (location)
+                    references LOCATION (location_id),
+                constraint fk_penalty_vehicle foreign key (vehicle)
+                references VEHICLE (id),
+                    constraint fk_penalty_card foreign key (card)
+                references PAYMENT_CARD (id)
+            );
+        </sql>
+        <rollback>
+            <sql>
+                DROP TABLE PENALTIES;
+            </sql>
+        </rollback>
+    </change>
+
+</change-set>
